@@ -20,7 +20,7 @@ class SmsService
 
     private LogInterface $log;
 
-    public function __construct(ConfigInterface $config, ?LogInterface $log)
+    public function __construct(ConfigInterface $config, ?LogInterface $log = null)
     {
         $this->config = $config;
 
