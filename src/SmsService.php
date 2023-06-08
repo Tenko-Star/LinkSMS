@@ -47,12 +47,7 @@ class SmsService
     {
         $apiName = 'BatchSend2';
 
-        $encoding = mb_detect_encoding($content, mb_detect_order(), true);
-        if ($encoding === false) {
-            throw new SmsException('Invalided text encoding. Expected GBK or GB2312.');
-        }
-
-        $convertedText = mb_convert_encoding($content, 'GBK', $encoding);
+        $convertedText = rawurlencode(mb_convert_encoding($content, "gb2312", "utf-8"));
 
         if (!empty($cell) && !is_numeric($cell)) {
             throw new SmsException('Cell must be a numeric string.');
@@ -76,12 +71,12 @@ class SmsService
             $data['SendTime'] = $sendTimeStr;
         }
 
-        $response = $this->request->post($apiName . '.aspx', $data);
+        $response = $this->request->get($apiName . '.aspx', $data);
 
         $responseData = $this->checkResponse($apiName, $response);
 
         if (!is_numeric($responseData)) {
-            throw new SmsException('Api data changed. Please check document.');
+            throw new SmsException('Api data changed. Please check document. Message: ' . json_encode($responseData));
         }
 
         return (int)$responseData;
