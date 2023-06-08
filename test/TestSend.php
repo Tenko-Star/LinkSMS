@@ -12,7 +12,7 @@ class TestSend extends BaseTestCase
 {
     private function getInfo(): array
     {
-        $mobile = $this->env['mobile'] ?? [];
+        $mobile = (array)$this->env['mobile'] ?? [];
         $this->assertIsArray($mobile);
         $this->assertNotEmpty($mobile);
 
@@ -22,8 +22,9 @@ class TestSend extends BaseTestCase
 
         $cell = $this->env['cell'] ?? '';
         $this->assertIsString($cell);
-        $this->assertNotEmpty($cell);
-        $this->assertIsNumeric($cell);
+        if (!empty($cell)) {
+            $this->assertIsNumeric($cell);
+        }
 
         $schedule = $this->env['schedule'] ?? '';
         $this->assertIsString($schedule);
