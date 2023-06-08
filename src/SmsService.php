@@ -102,7 +102,7 @@ class SmsService
             'Pwd' => $this->config->getPassword(),
         ];
 
-        $response = $this->request->post($apiName . '.aspx', $data);
+        $response = $this->request->get($apiName . '.aspx', $data);
 
         $responseData = $this->checkResponse($apiName, $response);
 
@@ -164,7 +164,7 @@ class SmsService
             'Pwd' => $this->config->getPassword(),
         ];
 
-        $response = $this->request->post($apiName . '.aspx', $data);
+        $response = $this->request->get($apiName . '.aspx', $data);
 
         $responseData = $this->checkResponse($apiName, $response);
 
