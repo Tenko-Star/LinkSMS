@@ -15,6 +15,8 @@ class TestRemain extends BaseTestCase
         $remain = $sms->getRemain();
 
         $this->assertGreaterThan(0, $remain);
+
+        fwrite(STDERR, 'remain: ' . $remain);
     }
 
 

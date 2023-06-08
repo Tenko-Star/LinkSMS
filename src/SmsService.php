@@ -121,6 +121,8 @@ class SmsService
         $result = [];
 
         foreach ($messages as $message) {
+            $message = trim($message);
+
             if (empty($message)) {
                 continue;
             }

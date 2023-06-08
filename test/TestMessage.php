@@ -10,7 +10,7 @@ class TestMessage extends BaseTestCase
     {
         $sms = new \LinkSms\SmsService($this->config, $this->log);
 
-        $str = '||13899990000#test#20060912152435#||13899990001#test1#20060912152435#010||13899990002#test2#20060912152435#777888';
+        $str = "||13899990000#test#20060912152435#\n||13899990001#test1#20060912152435#010\n||13899990002#test2#20060912152435#777888\n";
 
         $messages = $sms->parseMessageStr($str);
 
@@ -25,5 +25,7 @@ class TestMessage extends BaseTestCase
         $this->assertEquals('test2', $messages[2]->getContent());
         $this->assertEquals(1158045875, $messages[2]->getSendTime()->getTimestamp());
         $this->assertEquals('777888', $messages[2]->getCell());
+
+        fwrite(STDERR, json_encode($messages));
     }
 }
