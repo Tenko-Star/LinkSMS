@@ -4,7 +4,7 @@ namespace LinkSms\Library;
 
 use DateTimeImmutable;
 
-class Message
+class Message implements \JsonSerializable
 {
     private string $mobile;
 
@@ -58,5 +58,15 @@ class Message
     public function getCell(): string
     {
         return $this->cell;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'mobile' => $this->mobile,
+            'content' => $this->content,
+            'send_time' => $this->sendTime->format('Y-m-d H:i:s'),
+            'cell' => $this->cell
+        ];
     }
 }
