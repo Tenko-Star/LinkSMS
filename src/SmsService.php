@@ -172,6 +172,28 @@ class SmsService
         return (int)$responseData;
     }
 
+    /**
+     * Get forbidden number array
+     *
+     * @return array<string>
+     * @throws SmsException
+     */
+    public function getForbiddenNumbers(): array
+    {
+        $apiName = 'NotSend';
+
+        $data = [
+            'CorpID' => $this->config->getCorpId(),
+            'Pwd' => $this->config->getPassword(),
+        ];
+
+        $response = $this->request->get($apiName . '.aspx', $data);
+
+        $responseData = $this->checkResponse($apiName, $response);
+
+        return explode(',', $responseData);
+    }
+
     private function checkResponse(string $apiName, Response $response): string
     {
         $content = $response->getBody()->getContents();
