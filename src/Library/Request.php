@@ -4,6 +4,7 @@ namespace LinkSms\Library;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Client\ClientExceptionInterface;
 use LinkSms\Exception\RequestException;
 
@@ -43,7 +44,8 @@ class Request
                 break;
 
             case 'POST':
-                $request = new \GuzzleHttp\Psr7\Request($method, $url, $this->headers, $params);
+                $stream = Utils::streamFor($this->parseQuery($params));
+                $request = new \GuzzleHttp\Psr7\Request($method, $url, $this->headers, $stream);
                 break;
             default:
                 throw new RequestException('Unsupported method');
@@ -59,12 +61,12 @@ class Request
         return $response;
     }
 
-    public function get(string $api, array $params = []): Response
+    public function get(string $api, array $params = []): ?Response
     {
         return $this->request($api, $params);
     }
 
-    public function post(string $api, array $params = []): Response
+    public function post(string $api, array $params = []): ?Response
     {
         return $this->request($api, $params, 'POST');
     }
