@@ -10,6 +10,7 @@ use LinkSms\Library\DefaultLog;
 use LinkSms\Library\ErrorMap;
 use LinkSms\Library\LogInterface;
 use LinkSms\Library\Message;
+use LinkSms\Library\Report;
 use LinkSms\Library\Request;
 
 class SmsService
@@ -192,6 +193,69 @@ class SmsService
         $responseData = $this->checkResponse($apiName, $response);
 
         return explode(',', $responseData);
+    }
+
+    /**
+     * Get report for message.
+     *
+     * @return Report[]
+     * @throws SmsException
+     */
+    private function getSmsReport(): array
+    {
+        $apiName = 'GetReportSMS';
+
+        $data = [
+            'CorpID' => $this->config->getCorpId(),
+            'Pwd' => $this->config->getPassword(),
+        ];
+
+        $response = $this->request->get($apiName . '.aspx', $data);
+
+        $responseData = $this->checkResponse($apiName, $response);
+
+        return $this->parseReportStr($responseData);
+    }
+
+    private function parseReportStr(string $reportStr): array
+    {
+        if (strpos($reportStr, '$$$$$') === false) {
+            throw new SmsException($reportStr);
+        }
+
+        $reports = explode('|||', $reportStr);
+
+        /** @var array<Report> $result */
+        $result = [];
+        foreach ($reports as $report) {
+            if (empty($report)) {
+                continue;
+            }
+
+            $data = explode('$$$$$', $report);
+            if (count($data) !== 6) {
+                $this->log->warning('Unexpected report: ' . $report);
+                continue;
+            }
+
+            try {
+                $messageStruct = new Report(
+                    $data[0],
+                    $data[1],
+                    new DateTimeImmutable($data[2], new \DateTimeZone('Asia/Shanghai')),
+                    (int)$data[3],
+                    $data[4],
+                    new DateTimeImmutable($data[5], new \DateTimeZone('Asia/Shanghai')),
+                );
+
+                $result[] = $messageStruct;
+            } catch (\Exception $e) {
+                $this->log->warning('Invalid date time format: ' . $data[2]);
+                continue;
+            }
+        }
+
+        return $result;
     }
 
     private function checkResponse(string $apiName, Response $response): string
