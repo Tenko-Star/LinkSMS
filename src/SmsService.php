@@ -258,8 +258,12 @@ class SmsService
         return $result;
     }
 
-    private function checkResponse(string $apiName, Response $response): string
+    private function checkResponse(string $apiName, ?Response $response): string
     {
+        if ($response === null) {
+            throw new SmsException('Request error: ' . Request::getError());
+        }
+
         $content = $response->getBody()->getContents();
 
         if (is_numeric($content) && (int)$content < 0) {

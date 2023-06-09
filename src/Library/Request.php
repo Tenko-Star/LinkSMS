@@ -8,7 +8,7 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Client\ClientExceptionInterface;
 use LinkSms\Exception\RequestException;
 
-class Request
+final class Request
 {
     private Client $client;
 
@@ -17,6 +17,8 @@ class Request
     private array $headers;
 
     private string $baseUrl;
+
+    private static string $errMsg = '';
 
     public function __construct(ConfigInterface $config, LogInterface $log)
     {
@@ -54,6 +56,7 @@ class Request
         try {
             $response = $this->client->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
+            self::setError($e->getMessage());
             $this->log->warning($e->getMessage(), $e->getTrace());
             return null;
         }
@@ -84,5 +87,15 @@ class Request
         }
 
         return ($withQ ? '?' : '') . implode('&', $data);
+    }
+
+    private static function setError(string $msg): void
+    {
+        self::$errMsg = $msg;
+    }
+
+    public static function getError(): string
+    {
+        return self::$errMsg;
     }
 }
